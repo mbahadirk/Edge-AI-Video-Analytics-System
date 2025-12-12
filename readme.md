@@ -27,7 +27,10 @@ graph LR
     Monitor[Performance Monitor] -.->|Log Metrics| API
     NVML[NVIDIA NVML] -.->|GPU Stats| Monitor
     end
-📂 Project StructurePlaintext├── api/
+```
+<h3>📂 Project Structure</h3>
+```
+├── api/
 │   ├── server.py           # Main FastAPI application
 │   ├── schemas.py          # Pydantic data models
 │   └── docker/             # Docker configuration
@@ -40,16 +43,69 @@ graph LR
 │   └── model.trt           # Optimized TensorRT Engine
 ├── stress_test.py          # Client-side benchmarking script
 └── requirements.txt        # Python dependencies
-🚀 Quick StartPrerequisitesNVIDIA GPU (CUDA 11.x / 12.x compatible)Docker & NVIDIA Container ToolkitPython 3.10+1. Build the Docker ImageThe Dockerfile uses the official NVIDIA TensorRT runtime as a base.Bashdocker build -t detection-api -f api/docker/Dockerfile .
-2. Run the ContainerLaunch the API with GPU access enabled.Bashdocker run -d \
+```
+
+<h3>🚀 Quick Start</h3>
+Prerequisites
+NVIDIA GPU (CUDA 11.x / 12.x compatible)
+
+Docker & NVIDIA Container Toolkit
+
+Python 3.10+
+
+1. Build the Docker Image
+The Dockerfile uses the official NVIDIA TensorRT runtime as a base.
+```bash
+docker build -t detection-api -f api/docker/DockerFile .
+```
+
+2. Run the Container
+Launch the API with GPU access enabled.
+```
+Bash
+
+docker run -d \
   --name detector \
   --gpus all \
   -p 8000:8000 \
   detection-api
-3. Verify HealthCheck if the model is loaded and GPU is accessible:Bashcurl http://localhost:8000/health
+ ```
+3. Verify Health
+Check if the model is loaded and GPU is accessible:
+```
+Bash
+
+curl http://localhost:8000/health
 # Output: {"status": "healthy", "gpu_available": true}
-⚡ Performance BenchmarksPerformance metrics were collected using stress_test.py.MetricResultDescriptionThroughput~19 FPSEnd-to-end (HTTP + Inference)Avg Latency53 msTotal round-trip timemAP@500.96Model precision after trainingFormatTensorRT (FP16)Optimized engine formatTo reproduce these results, run the stress test script:Bashpython stress_test.py
-📡 API Documentation1. Detect ObjectsEndpoint: /detectMethod: POSTBody: multipart/form-data (Key: file)Response:JSON{
+```
+<h3>⚡ Performance Benchmarks</h3>
+```mermaid
+Performance metrics were collected using ``` stress_test.py.```
+Metric,Result,Description
+Throughput,18.84 FPS,End-to-end (HTTP + Inference)
+Avg Latency,53.02 ms,Total round-trip time
+mAP@50,0.96,Model precision after training
+Format,TensorRT (FP16),Optimized engine format
+```
+
+To reproduce these results, run the stress test script:
+
+```bash
+python stress_test.py
+```
+
+📡 API Documentation
+1. Detect Objects
+Endpoint: /detect
+
+Method: POST
+
+Body: multipart/form-data (Key: file)
+
+Response:
+
+```JSON
+{
   "detections": [
     {
       "x_min": 100,
@@ -64,10 +120,56 @@ graph LR
   "inference_time_ms": 15.4,
   "fps": 64.9
 }
-2. Real-Time MetricsEndpoint: /metricsMethod: GETDescription: Returns live monitoring stats for dashboards.Response:JSON{
-  "avg_latency_ms": 53.2,
+```
+
+2. Real-Time Metrics
+Endpoint: /metrics
+
+Method: GET
+
+Description: Returns live monitoring stats for dashboards.
+
+Response:
+
+```JSON
+{
+  "avg_latency_ms": 53.02,
   "current_fps": 18.8,
   "gpu_usage_percent": 45,
   "gpu_memory_used_mb": 1250
 }
-🧠 Training StrategyThe model was trained using YOLOv8m (Medium) to balance speed and accuracy.Key HyperparametersOptimizer: AdamW with Cosine Learning Rate Scheduler.Precision: AMP (Automatic Mixed Precision).Batch Size: Optimized for 16GB VRAM.Strong AugmentationsTo ensure robustness in varied environments, the following augmentations were applied (via training/augmentations.py):Mosaic & MixUp: To improve small object detection and generalization.HSV Jitter: Robustness against lighting changes.Random Erasing: Simulating occlusions.🛠️ Technical DecisionsWhy TensorRT?Standard PyTorch inference has high overhead. TensorRT optimizes the graph (layer fusion) and uses FP16 precision to boost inference speed by ~40% on NVIDIA hardware.Why FastAPI?Its asynchronous nature (async def) allows handling concurrent requests efficiently without blocking the inference loop.Why Docker?Ensures reproducibility. The nvcr.io/nvidia/tensorrt base image eliminates "CUDA hell" by pre-packaging all driver dependencies.📜 LicenseTechnical Assessment Submission - December 2025
+```
+<h3>🧠 Training Strategy</h3>
+The model was trained using YOLOv8m (Medium) to balance speed and accuracy.
+
+Key Hyperparameters
+Optimizer: AdamW with Cosine Learning Rate Scheduler.
+
+Precision: AMP (Automatic Mixed Precision).
+
+Batch Size: Optimized for 16GB VRAM.
+
+Strong Augmentations
+To ensure robustness in varied environments, the following augmentations were applied (via training/augmentations.py):
+
+Mosaic & MixUp: To improve small object detection and generalization.
+
+HSV Jitter: Robustness against lighting changes.
+
+Random Erasing: Simulating occlusions.
+
+<h3>🛠️ Technical Decisions</h3>
+Why TensorRT?
+
+Standard PyTorch inference has high overhead. TensorRT optimizes the graph (layer fusion) and uses FP16 precision to boost inference speed by ~40% on NVIDIA hardware.
+
+Why FastAPI?
+
+Its asynchronous nature (async def) allows handling concurrent requests efficiently without blocking the inference loop.
+
+Why Docker?
+
+Ensures reproducibility. The nvcr.io/nvidia/tensorrt base image eliminates "CUDA hell" by pre-packaging all driver dependencies.
+
+<h2>📜 License </h2>
+Technical Assessment Submission - December 2025

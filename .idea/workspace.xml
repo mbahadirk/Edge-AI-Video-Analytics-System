@@ -4,52 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5168721e-4438-4e69-bd4d-9d29fd507073" name="Changes" comment="init">
-      <change afterPath="$PROJECT_DIR$/.idea/csv-editor.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inference/video_engine.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/best.onnx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/best.pt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/last.pt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/yolov8l_fp16.engine" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/yolov8l_int8.engine" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/monitoring/monitor.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/stress_test.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/augmentations.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/data.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/BoxF1_curve.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/BoxPR_curve.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/BoxP_curve.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/BoxR_curve.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/args.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/confusion_matrix.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/confusion_matrix_normalized.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/events.out.tfevents.1765521408.0b2561d898d8.7074.0" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/labels.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/results.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/results.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/train_batch0.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/train_batch1.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/train_batch13815.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/train_batch13816.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/train_batch13817.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/train_batch2.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/val_batch0_labels.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/val_batch0_pred.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/val_batch1_labels.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/val_batch1_pred.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/val_batch2_labels.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/val_batch2_pred.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_strong_aug_v2/args.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_strong_aug_v2/labels.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_strong_aug_v2/results.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_strong_aug_v2/train_batch0.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_strong_aug_v2/train_batch1.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_strong_aug_v2/train_batch2.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/train.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="5168721e-4438-4e69-bd4d-9d29fd507073" name="Changes" comment="models load">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -233,11 +190,29 @@
       <option name="project" value="LOCAL" />
       <updated>1765356534397</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="codes aranged">
+      <option name="closed" value="true" />
+      <created>1765549717423</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1765549717423</updated>
+    </task>
+    <task id="LOCAL-00003" summary="models load">
+      <option name="closed" value="true" />
+      <created>1765549822078</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1765549822078</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="init" />
-    <option name="LAST_COMMIT_MESSAGE" value="init" />
+    <MESSAGE value="codes aranged" />
+    <MESSAGE value="models load" />
+    <option name="LAST_COMMIT_MESSAGE" value="models load" />
   </component>
 </project>
