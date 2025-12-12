@@ -15,7 +15,7 @@ This project represents a production-grade, end-to-end AI pipeline designed for 
 ## 🏗️ Architecture
 The system is designed as a microservice that exposes a REST API.
 
-```mermaid
+```
 graph LR
     User[Client / Stress Test] -->|POST Image| API[FastAPI Server]
     API -->|Pre-process| TRT[TensorRT Engine]
