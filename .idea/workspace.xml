@@ -1,18 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="5168721e-4438-4e69-bd4d-9d29fd507073" name="Changes" comment="" />
+    <list default="true" id="5168721e-4438-4e69-bd4d-9d29fd507073" name="Changes" comment="init">
+      <change afterPath="$PROJECT_DIR$/.idea/csv-editor.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inference/video_engine.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/best.onnx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/best.pt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/last.pt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/yolov8l_fp16.engine" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/yolov8l_int8.engine" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/monitoring/monitor.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/stress_test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/augmentations.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/data.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/BoxF1_curve.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/BoxPR_curve.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/BoxP_curve.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/BoxR_curve.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/args.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/confusion_matrix.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/confusion_matrix_normalized.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/events.out.tfevents.1765521408.0b2561d898d8.7074.0" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/labels.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/results.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/results.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/train_batch0.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/train_batch1.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/train_batch13815.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/train_batch13816.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/train_batch13817.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/train_batch2.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/val_batch0_labels.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/val_batch0_pred.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/val_batch1_labels.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/val_batch1_pred.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/val_batch2_labels.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_continued/val_batch2_pred.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_strong_aug_v2/args.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_strong_aug_v2/labels.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_strong_aug_v2/results.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_strong_aug_v2/train_batch0.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_strong_aug_v2/train_batch1.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/logs/yolov8m_strong_aug_v2/train_batch2.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/train.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 3
-}]]></component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
   <component name="ProjectId" id="36eA9H9uS1yraCOXFtpg4uVaoCW" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -21,11 +85,130 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Python.run_demo.executor": "Run",
+    "Python.stress_test.executor": "Run",
+    "Python.tensorrt-installer.executor": "Run",
+    "Python.video_engine.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master"
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/pahstoner/PycharmProjects/cv-advanced-assessment",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\pahstoner\PycharmProjects\cv-advanced-assessment" />
+      <recent name="C:\Users\pahstoner\PycharmProjects\cv-advanced-assessment\training\logs\yolov8m_continued" />
+      <recent name="C:\Users\pahstoner\PycharmProjects\cv-advanced-assessment\training\logs\yolov8m_strong_aug_v2" />
+      <recent name="C:\Users\pahstoner\PycharmProjects\cv-advanced-assessment\training" />
+      <recent name="C:\Users\pahstoner\PycharmProjects\cv-advanced-assessment\models" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\pahstoner\PycharmProjects\cv-advanced-assessment\models" />
+      <recent name="C:\Users\pahstoner\PycharmProjects\cv-advanced-assessment\inference" />
+      <recent name="C:\Users\pahstoner\PycharmProjects\cv-advanced-assessment\training" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.video_engine">
+    <configuration name="run_demo" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="cv-advanced-assessment" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/run_demo.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="stress_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="cv-advanced-assessment" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/stress_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="tensorrt-installer" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="cv-advanced-assessment" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tensorrt-installer.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="video_engine" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="cv-advanced-assessment" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/inference" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/inference/video_engine.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.video_engine" />
+        <item itemvalue="Python.stress_test" />
+        <item itemvalue="Python.tensorrt-installer" />
+        <item itemvalue="Python.run_demo" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -42,6 +225,19 @@
       <option name="presentableId" value="Default" />
       <updated>1765356509741</updated>
     </task>
+    <task id="LOCAL-00001" summary="init">
+      <option name="closed" value="true" />
+      <created>1765356534397</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1765356534397</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="init" />
+    <option name="LAST_COMMIT_MESSAGE" value="init" />
   </component>
 </project>

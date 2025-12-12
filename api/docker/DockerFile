@@ -1,0 +1,35 @@
+# Base image: NVIDIA TensorRT Runtime (adjust version to match your host/engine)
+# Check compatibility: https://docs.nvidia.com/deeplearning/tensorrt/container-release-notes/index.html
+FROM nvcr.io/nvidia/tensorrt:23.10-py3
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+
+# Install system dependencies (OpenCV requires libgl1)
+RUN apt-get update && apt-get install -y \
+    python3-pip \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements and install
+# Note: tensorrt is already installed in the base image.
+# We mostly need API and image processing libs.
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY api/ /app/api/
+COPY models/ /app/models/
+
+# Expose the API port
+EXPOSE 8000
+
+# Command to run the application
+# We use 'api.server:app' because we copied the api folder into /app/api
+WORKDIR /app
+CMD ["uvicorn", "api.server:app", "--host", "0.0.0.0", "--port", "8000"]

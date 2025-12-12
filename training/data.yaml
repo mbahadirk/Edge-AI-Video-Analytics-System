@@ -1,0 +1,13 @@
+names:
+- head
+- helmet
+nc: 2
+roboflow:
+  license: Public Domain
+  project: hard-hat-universe-0dy7t
+  url: https://universe.roboflow.com/universe-datasets/hard-hat-universe-0dy7t/dataset/17
+  version: 17
+  workspace: universe-datasets
+test: ../test/images
+train: ../train/images
+val: ../valid/images
