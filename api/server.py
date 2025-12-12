@@ -15,6 +15,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from api.schemas import DetectionResponse, HealthResponse, MetricsResponse, BoundingBox
 from monitoring.monitor import PerformanceMonitor
+from monitoring.dashboard import Dashboard
 
 # --- Configuration ---
 MODEL_PATH = "models/model.trt"
@@ -162,6 +163,18 @@ async def detect_objects(
     raw_results = model.infer(image)  # Run Model
 
     latency_ms = perf_monitor.stop_inference(t0)  # Stop Timer & Record
+
+
+    # Initialize
+    dashboard = Dashboard(window_size=100)
+
+    # Inside endpoint:
+    t0 = dashboard.start_recording()
+    # ... inference ...
+    lat = dashboard.stop_recording(t0)
+
+    # Background task:
+    background_tasks.add_task(dashboard.capture_snapshot)
 
     # 3. Queue Logging Task (Non-blocking)
     # Log every 10th request or if latency spikes > 100ms

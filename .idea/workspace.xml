@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5168721e-4438-4e69-bd4d-9d29fd507073" name="Changes" comment="calibration">
-      <change afterPath="$PROJECT_DIR$/monitoring/dashboard.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/monitoring/fps_meter.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/monitoring/logger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -239,7 +237,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765551506683</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="calibration">
+      <option name="closed" value="true" />
+      <created>1765551578175</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1765551578175</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
