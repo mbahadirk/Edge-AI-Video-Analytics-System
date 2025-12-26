@@ -1,12 +1,9 @@
 import time
 import numpy as np
 import cv2
-import torch
-import onnxruntime
 import tensorrt as trt
 import pycuda.driver as cuda
 import pycuda.autoinit
-from ultralytics import YOLO
 
 
 class Detector:
@@ -15,18 +12,26 @@ class Detector:
         self.input_size = input_size
         self.conf_thres = conf_thres
         self.iou_thres = iou_thres
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+        # --- LAZY IMPORT: Sadece gereken kütüphaneyi yükle ---
         if self.backend == "pytorch":
+            print("📦 PyTorch Backend Yükleniyor (Yüksek VRAM Kullanımı)...")
+            import torch
+            from ultralytics import YOLO
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             self.model = YOLO(model_path).model.to(self.device).eval()
 
         elif self.backend == "onnx":
+            print("📦 ONNX Backend Yükleniyor...")
+            import onnxruntime
             providers = ['TensorrtExecutionProvider', 'CUDAExecutionProvider', 'CPUExecutionProvider']
             self.session = onnxruntime.InferenceSession(model_path, providers=providers)
             self.input_name = self.session.get_inputs()[0].name
             self.output_names = [o.name for o in self.session.get_outputs()]
 
         elif self.backend == "tensorrt":
+            print("🚀 TensorRT Backend Yükleniyor (Minimum VRAM)...")
+            # TensorRT zaten yukarıda import edilmişti çünkü hafif bir kütüphane
             self.logger = trt.Logger(trt.Logger.WARNING)
             with open(model_path, "rb") as f, trt.Runtime(self.logger) as runtime:
                 self.engine = runtime.deserialize_cuda_engine(f.read())
@@ -52,12 +57,18 @@ class Detector:
                 size = trt.volume(fixed_dims)
                 dtype = trt.nptype(self.engine.get_tensor_dtype(name))
 
+                # Standart RAM (Pinned Memory)
                 try:
                     host_mem = cuda.pagelocked_empty(size, dtype)
                 except:
                     host_mem = np.empty(size, dtype)
 
-                device_mem = cuda.mem_alloc(host_mem.nbytes)
+                # GPU VRAM Tahsisi
+                try:
+                    device_mem = cuda.mem_alloc(host_mem.nbytes)
+                except cuda.MemoryError:
+                    raise RuntimeError("❌ GPU VRAM yetmedi! Lütfen çalışan diğer Python süreçlerini kapatın.")
+
                 self.bindings.append(int(device_mem))
 
                 if self.engine.get_tensor_mode(name) == trt.TensorIOMode.INPUT:
@@ -78,9 +89,7 @@ class Detector:
             print(f"Warmup ignored: {e}")
 
     def preprocess(self, image):
-        # BGR -> RGB
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
         h, w = image.shape[:2]
         scale = min(self.input_size[0] / h, self.input_size[1] / w)
         nh, nw = int(h * scale), int(w * scale)
@@ -103,23 +112,12 @@ class Detector:
     def postprocess(self, output, scale, pad):
         dw, dh = pad
         output = np.squeeze(output)
-
-        # --- DÜZELTME BAŞLANGICI ---
-        # (8400, 6) gelirse bunu (6, 8400)'e çeviriyoruz.
-        # Mantık: 8400 her zaman "kutu sayısıdır", büyük olan boyut sona gelmeli.
-        if output.shape[0] > output.shape[1]:
-            output = output.T
-
-        # Artık boyutumuz (Kanal Sayısı, 8400). Örn: (6, 8400) veya (84, 8400)
-        # Sınıf sayısını 84'e sabitlemek yerine dinamik alıyoruz.
-        num_classes = output.shape[0] - 4  # İlk 4'ü koordinat, gerisi sınıf
-        # ---------------------------
+        if output.shape[0] > output.shape[1]: output = output.T
 
         boxes = []
         scores = []
         class_ids = []
 
-        # Sütunlar (8400) üzerinde dön
         for i in range(output.shape[1]):
             class_score = output[4:, i]
             class_id = np.argmax(class_score)
@@ -127,12 +125,10 @@ class Detector:
 
             if score > self.conf_thres:
                 cx, cy, w, h = output[:4, i]
-
                 x1 = (cx - w / 2 - dw) / scale
                 y1 = (cy - h / 2 - dh) / scale
                 w = w / scale
                 h = h / scale
-
                 x1 = max(0, x1)
                 y1 = max(0, y1)
 
@@ -151,18 +147,17 @@ class Detector:
                     "score": scores[i],
                     "class_id": class_ids[i]
                 })
-
         return detections
 
     def __call__(self, image):
         t_start = time.time()
-
         if isinstance(image, list): image = image[0]
-
         preprocessed_img, scale, pad = self.preprocess(image)
         t_infer_start = time.time()
 
         if self.backend == "pytorch":
+            import torch  # Local import
+            # Burada self.device'a erişim __init__ içinde tanımlandığı için sorun olmaz
             input_tensor = torch.from_numpy(preprocessed_img).to(self.device)
             with torch.no_grad():
                 output = self.model(input_tensor)[0].cpu().numpy()
@@ -197,13 +192,3 @@ class Detector:
         }
 
         return results, stats
-
-if __name__ == "__main__":
-    img = cv2.imread("../test_media/test_image_2.jpg")
-    if img is None:
-        img = np.zeros((640, 640, 3), dtype=np.uint8)
-
-    detector = Detector(backend="pytorch", model_path="../models/best.pt")
-    dets, stats = detector(img)
-    print(f"Detections: {len(dets)}")
-    print(f"Timing: {stats}")
