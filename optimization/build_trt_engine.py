@@ -52,5 +52,5 @@ if __name__ == "__main__":
     onnx_path = "../models/best.onnx"
     data_path = "./Hard-Hat-Universe-17/valid/images"
     
-    build_engine(onnx_path, "../models/yolov8l_fp16.engine", mode='fp16')
-    build_engine(onnx_path, "../models/yolov8l_int8.engine", mode='int8', calibration_data_dir=data_path)
+    build_engine(onnx_path, "../models/yolov8m_fp16.engine", mode='fp16')
+    build_engine(onnx_path, "../models/yolov8m_int8.engine", mode='int8', calibration_data_dir=data_path)

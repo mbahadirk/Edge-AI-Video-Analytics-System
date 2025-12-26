@@ -160,11 +160,11 @@ class Detector:
         return results, stats
 
 if __name__ == "__main__":
-    img = cv2.imread("test_image.jpg")
+    img = cv2.imread("../test_image.jpg")
     if img is None:
         img = np.zeros((640, 640, 3), dtype=np.uint8)
 
-    detector = Detector(backend="onnx", model_path="models/yolov8l.onnx")
+    detector = Detector(backend="pytorch", model_path="../models/best.pt")
     dets, stats = detector(img)
     print(f"Detections: {len(dets)}")
     print(f"Timing: {stats}")
