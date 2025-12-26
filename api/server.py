@@ -4,182 +4,247 @@ import cv2
 import numpy as np
 import uvicorn
 import pynvml
+import shutil
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks
+from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks, Query
+from fastapi.responses import Response, FileResponse
 from typing import List
 
 # --- Path Setup ---
-# Proje ana dizinini path'e ekliyoruz ki 'inference' ve 'monitoring' modüllerini bulabilsin
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+CURRENT_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(CURRENT_FILE_DIR)
+sys.path.append(PROJECT_ROOT)
 
-from api.schemas import DetectionResponse, HealthResponse, MetricsResponse, BoundingBox
-# Önceki adımlarda yazdığımız güçlü Detector sınıfını kullanıyoruz
+# Klasör Tanımları
+MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
+RESULTS_DIR = os.path.join(PROJECT_ROOT, "results")
+TEMP_DIR = os.path.join(PROJECT_ROOT, "temp")
+
+# --- Kullanıcı Ayarı ---
+DEFAULT_MODEL_NAME = "best.onnx"
+
+from api.schemas import DetectionResponse, HealthResponse, MetricsResponse, BoundingBox, ModelLoadRequest
 from inference.inference import Detector
-# İzleme için Dashboard sınıfını kullanıyoruz
 from monitoring.dashboard import Dashboard
 
-# --- Configuration ---
-MODEL_PATH = "../models/yolov8l_int8.engine"  # Veya .engine
-CONFIDENCE_THRESHOLD = 0.5
-
 # --- Global State ---
-# Detector ve Dashboard'u global olarak tanımlıyoruz
 detector: Detector = None
-# Dashboard'u burada başlatıyoruz, her istekte yeniden başlatmak (file'daki hata) performansı öldürür
 dashboard = Dashboard(window_size=100)
+current_model_name = "None"
+
+
+def determine_backend(model_file: str) -> str:
+    ext = os.path.splitext(model_file)[1].lower()
+    if ext in [".pt", ".pth"]:
+        return "pytorch"
+    elif ext == ".onnx":
+        return "onnx"
+    elif ext in [".engine", ".trt"]:
+        return "tensorrt"
+    else:
+        return "unknown"
+
+
+def draw_detections(image: np.ndarray, detections: list) -> np.ndarray:
+    vis_img = image.copy()
+    for det in detections:
+        box = det['box']
+        x1, y1, x2, y2 = int(box[0]), int(box[1]), int(box[2]), int(box[3])
+        conf = det['score']
+        cls_id = det['class_id']
+
+        cv2.rectangle(vis_img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        label = f"ID:{cls_id} {conf:.2f}"
+        t_size = cv2.getTextSize(label, 0, fontScale=0.5, thickness=1)[0]
+        c2 = x1 + t_size[0], y1 - t_size[1] - 3
+        cv2.rectangle(vis_img, (x1, y1), c2, (0, 255, 0), -1, cv2.LINE_AA)
+        cv2.putText(vis_img, label, (x1, y1 - 2), 0, 0.5, (255, 255, 255), thickness=1, lineType=cv2.LINE_AA)
+    return vis_img
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Uygulama başlarken modeli yükler ve GPU izlemeyi kontrol eder.
-    """
-    global detector
-    print("🚀 Server starting up...")
+    global detector, current_model_name
 
-    # 1. Load Model (Detector Sınıfı üzerinden)
-    if os.path.exists(MODEL_PATH):
-        try:
-            # Backend olarak 'tensorrt' seçiyoruz. inference.py bu işi halledecek.
-            print(f"Loading TensorRT Engine: {MODEL_PATH}")
-            detector = Detector(backend="tensorrt", model_path=MODEL_PATH, conf_thres=CONFIDENCE_THRESHOLD)
-            # Isınma turu (Warmup) Detector __init__ içinde otomatik yapılıyor.
-        except Exception as e:
-            print(f"❌ Critical Error loading model: {e}")
-            detector = None
+    # Klasörleri oluştur (Garanti olsun)
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+    os.makedirs(TEMP_DIR, exist_ok=True)
+
+    print("\n" + "=" * 40)
+    print(f"🚀 Server Başlatılıyor...")
+
+    if os.path.exists(MODELS_DIR):
+        files = os.listdir(MODELS_DIR)
+        target_path = os.path.join(MODELS_DIR, DEFAULT_MODEL_NAME)
+
+        if os.path.exists(target_path):
+            print(f"🎯 Varsayılan model bulundu: {DEFAULT_MODEL_NAME}")
+            load_model_logic(DEFAULT_MODEL_NAME)
+        else:
+            valid_files = [f for f in files if f.endswith(('.pt', '.onnx', '.engine', '.trt'))]
+            if valid_files:
+                print(f"🔄 Alternatif yükleniyor: {valid_files[0]}")
+                load_model_logic(valid_files[0])
+            else:
+                print("⚠️ Klasörde hiç uygun model YOK!")
     else:
-        print(f"⚠️ Warning: Model not found at {MODEL_PATH}. API will return errors.")
+        print(f"❌ HATA: '{MODELS_DIR}' klasörü yok!")
 
-    # 2. GPU Monitoring Kontrolü
     if dashboard.gpu_available:
-        print("✅ GPU Monitoring Initialized (NVML)")
-    else:
-        print("⚠️ GPU Monitoring Disabled (NVML Init Failed)")
+        print("✅ GPU Monitoring Aktif")
 
     yield
 
-    # Shutdown logic
-    print("🛑 Server shutting down...")
+    print("🛑 Server Kapatılıyor...")
+    # Temp klasörünü temizle ama klasörü silme (Permission hatası olmasın diye)
+    if os.path.exists(TEMP_DIR):
+        try:
+            shutil.rmtree(TEMP_DIR)
+        except:
+            pass
     try:
-        if dashboard.gpu_handle:
-            pynvml.nvmlShutdown()
+        if dashboard.gpu_handle: pynvml.nvmlShutdown()
     except:
         pass
 
 
-# --- API Application ---
-app = FastAPI(
-    title="Real-Time Detection API (TensorRT)",
-    version="1.0.0",
-    lifespan=lifespan
-)
+def load_model_logic(model_name: str):
+    global detector, current_model_name
+    model_path = os.path.join(MODELS_DIR, model_name)
+    backend = determine_backend(model_name)
+    print(f"📥 Model Yükleniyor: {model_name} ({backend})")
+    detector = Detector(backend=backend, model_path=model_path)
+    current_model_name = model_name
+    print(f"✅ Model Başarıyla Yüklendi!")
 
 
-def decode_image(file_bytes: bytes) -> np.ndarray:
-    """Bytes verisini OpenCV formatına çevirir."""
-    nparr = np.frombuffer(file_bytes, np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    if img is None:
-        raise HTTPException(status_code=400, detail="Invalid image format")
-    return img
+# --- API ---
+app = FastAPI(title="Dynamic AI Server", version="3.1 - Fixes")
 
 
-# --- Endpoints ---
-
-@app.get("/health", response_model=HealthResponse)
-def health_check():
-    """API ve GPU durumunu kontrol eder."""
-    return {
-        "status": "healthy" if detector else "degraded",
-        "gpu_available": dashboard.gpu_available
-    }
+@app.get("/models")
+def list_models():
+    files = [f for f in os.listdir(MODELS_DIR)] if os.path.exists(MODELS_DIR) else []
+    return {"available_models": files, "current_loaded_model": current_model_name}
 
 
-@app.post("/detect", response_model=DetectionResponse)
-async def detect_objects(
-        background_tasks: BackgroundTasks,
-        file: UploadFile = File(...)
-):
-    """
-    Ana tespit endpoint'i.
-    1. Resmi decode eder.
-    2. Detector ile tahmin yapar (Süreyi ölçerek).
-    3. Sonuçları loglar.
-    """
-    if not detector:
-        raise HTTPException(status_code=503, detail="Model not initialized")
-
-    # 1. Read & Decode
+@app.post("/load")
+def load_model_endpoint(request: ModelLoadRequest):
     try:
-        contents = await file.read()
-        image = decode_image(contents)
+        load_model_logic(request.model_name)
+        return {"status": "success", "message": f"Loaded {request.model_name}"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    # 2. Inference & Monitoring
-    # Timer'ı başlat
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy" if detector else "waiting", "model": current_model_name}
+
+
+def decode_image(file_bytes: bytes) -> np.ndarray:
+    nparr = np.frombuffer(file_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None: raise HTTPException(status_code=400, detail="Invalid image")
+    return img
+
+
+@app.post("/detect")
+async def detect_image(
+        background_tasks: BackgroundTasks,
+        file: UploadFile = File(...),
+        return_image: bool = Query(False)
+):
+    if not detector: raise HTTPException(status_code=503, detail="Model yüklü değil.")
+
+    contents = await file.read()
+    image = decode_image(contents)
+
     t0 = dashboard.start_recording()
-
-    try:
-        # Detector sınıfı hem sonuçları hem de süre istatistiklerini (stats) döner
-        # inference.py içindeki __call__ metodunu kullanıyoruz
-        detections_raw, stats = detector(image)
-    except Exception as e:
-        print(f"Inference Error: {e}")
-        raise HTTPException(status_code=500, detail="Inference failed")
-
-    # Timer'ı durdur ve süreyi kaydet
-    latency_ms = dashboard.stop_recording(t0)
-
-    # 3. Background Logging
-    # Yanıtı geciktirmemek için loglamayı arka plana atıyoruz
+    detections, stats = detector(image)
+    dashboard.stop_recording(t0)
     background_tasks.add_task(dashboard.capture_snapshot)
 
-    # 4. Format Response
-    # Detector sınıfı zaten {box, score, class_id} formatında dönüyor, şemaya uyarlıyoruz
+    # 1. Görsel Kayıt (Her zaman yapıyoruz)
+    vis_img = draw_detections(image, detections)
+    os.makedirs(RESULTS_DIR, exist_ok=True)  # Klasör yoksa oluştur
+    save_path = os.path.join(RESULTS_DIR, "latest_image.jpg")
+    cv2.imwrite(save_path, vis_img)
+
+    # 2. Return Image True ise Resim Dön
+    if return_image:
+        _, encoded_img = cv2.imencode('.jpg', vis_img)
+        return Response(content=encoded_img.tobytes(), media_type="image/jpeg")
+
+    # 3. Return Image False ise JSON Dön (DÜZELTME BURADA)
     formatted_detections = []
-
-    # inference.py'den gelen formatı API şemasına çeviriyoruz
-    # Gelen format: [{'box': [x1, y1, x2, y2], 'score': 0.95, 'class_id': 0}, ...]
-    for det in detections_raw:
+    for det in detections:
         box = det['box']
-        formatted_detections.append(BoundingBox(
-            x_min=int(box[0]),
-            y_min=int(box[1]),
-            x_max=int(box[2]),
-            y_max=int(box[3]),
-            confidence=det['score'],
-            class_id=det['class_id'],
-            label=f"class_{det['class_id']}"  # Eğer class names listen varsa buradan maple
-        ))
-
-    # FPS'i dashboard üzerinden anlık hesaplıyoruz
-    current_fps = dashboard.meter.get_fps()
+        formatted_detections.append({
+            "x_min": int(box[0]),
+            "y_min": int(box[1]),
+            "x_max": int(box[2]),
+            "y_max": int(box[3]),
+            # --- KRİTİK DÜZELTME: NumPy tiplerini Python tiplerine çevir ---
+            "confidence": float(det['score']),
+            "class_id": int(det['class_id']),
+            "label": str(det['class_id'])
+            # -------------------------------------------------------------
+        })
 
     return {
         "detections": formatted_detections,
-        "inference_time_ms": round(latency_ms, 2),
-        "fps": round(current_fps, 1),
-        "model_name": "yolov8_trt"
+        "count": len(detections),
+        "model": current_model_name,
+        "inference_time_ms": stats['inference_ms']
     }
 
 
-@app.get("/metrics", response_model=MetricsResponse)
-def get_metrics():
-    """
-    Dashboard üzerinden canlı performans verilerini çeker.
-    """
-    # Dashboard sınıfındaki FPSMeter'dan istatistikleri alıyoruz
-    lat_stats = dashboard.meter.get_latency_statistics()
-    gpu_stats = dashboard._get_gpu_stats()
-    current_fps = dashboard.meter.get_fps()
+@app.post("/detect_video")
+async def detect_video(file: UploadFile = File(...)):
+    if not detector: raise HTTPException(status_code=503, detail="Model yüklü değil.")
 
-    return {
-        "avg_latency_ms": lat_stats["avg"],
-        "current_fps": round(current_fps, 1),
-        "gpu_usage_percent": gpu_stats["util_pct"],
-        "gpu_memory_used_mb": gpu_stats["mem_used_mb"]
-    }
+    # --- DÜZELTME: Klasörü oluştur (No such file hatası için) ---
+    os.makedirs(TEMP_DIR, exist_ok=True)
+    # ----------------------------------------------------------
+
+    input_path = os.path.join(TEMP_DIR, "input_video.mp4")
+    output_path = os.path.join(TEMP_DIR, "output_processed.mp4")
+
+    with open(input_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    print(f"🎥 Video işleme başladı: {file.filename}")
+
+    cap = cv2.VideoCapture(input_path)
+    if not cap.isOpened():
+        raise HTTPException(status_code=400, detail="Video açılamadı.")
+
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    if fps == 0: fps = 30.0  # Hata önleyici
+
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+
+    frame_count = 0
+    while True:
+        ret, frame = cap.read()
+        if not ret: break
+
+        detections, _ = detector(frame)
+        processed_frame = draw_detections(frame, detections)
+        out.write(processed_frame)
+        frame_count += 1
+
+        if frame_count % 10 == 0: print(f"   İşlenen Kare: {frame_count}")
+
+    cap.release()
+    out.release()
+    print(f"✅ Video tamamlandı. Kare: {frame_count}")
+
+    return FileResponse(output_path, media_type="video/mp4", filename="processed_result.mp4")
 
 
 if __name__ == "__main__":

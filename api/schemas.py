@@ -26,3 +26,6 @@ class MetricsResponse(BaseModel):
     current_fps: float
     gpu_usage_percent: float
     gpu_memory_used_mb: float
+
+class ModelLoadRequest(BaseModel):
+    model_name: str

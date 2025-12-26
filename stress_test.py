@@ -7,7 +7,7 @@ import threading
 
 # --- CONFIG ---
 API_URL = "http://localhost:8000/detect"
-IMAGE_PATH = "test_image.jpg"  # Make sure this file exists next to the script!
+IMAGE_PATH = "test_media/test_image.jpg"  # Make sure this file exists next to the script!
 NUM_REQUESTS = 50  # How many requests to send
 CONCURRENCY = 1  # Sequential (1) or Parallel (>1)
 
